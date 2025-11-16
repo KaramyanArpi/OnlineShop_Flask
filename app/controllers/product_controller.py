@@ -12,10 +12,11 @@ class ProductController:
 
     def register_product(self):
         data = request.get_json()
-        title, price = data.get("title"), data.get("price")
+        title, price, sellers = data.get("title"), data.get("price"), data.get("sellers")
 
+        print(sellers)
         try:
-            new_product = ProductService.register(title, price)
+            new_product = ProductService.register(title, price, sellers)
             return jsonify({"product": new_product}), 201
         except (NotFoundError, AlreadyExistsError, InvalidInputError) as e:
             return jsonify({"error": e.message}), e.status_code

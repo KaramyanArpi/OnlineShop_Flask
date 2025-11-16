@@ -9,9 +9,9 @@ from app.db import get_db
 class ProductService:
 
     @staticmethod
-    def register(title, price):
-        if not title or not price:
-            raise InvalidInputError("title", "price")
+    def register(title, price, sellers):
+        if not title or not price or not sellers:
+            raise InvalidInputError("sellers, title", "price")
 
         db = get_db()
         cursor = db.cursor()
@@ -28,12 +28,21 @@ class ProductService:
         )
 
         cursor.execute("SELECT * FROM products WHERE title = ?", (title, ))
-        product = cursor.fetchone()
+        product = dict(cursor.fetchone())
+
+        print(product)
+
+        for seller_id in sellers:
+            print(seller_id)
+            cursor.execute("INSERT INTO seller_products (product_id, seller_id) VALUES (?, ?)", (product["id"], seller_id))
 
         db.commit()
         db.close()
 
-        return dict(product)
+        return {
+            **product,
+            "sellers": sellers
+        }
 
     @staticmethod
     def update_product_title(product_id, new_title):
