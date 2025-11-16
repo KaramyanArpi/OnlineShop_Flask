@@ -1,6 +1,5 @@
 from flask import Blueprint, request, jsonify
 from app.services.sellers_service import SellerService
-from app.db import get_db
 from app.exceptions import (
     NotFoundError,
     AlreadyExistsError,
@@ -9,15 +8,14 @@ from app.exceptions import (
 
 class SellerController:
     def __init__(self):
-        self.db = get_db()
-        self.seller_service = SellerService(self.db)
+        pass
 
     def seller_register(self):
         data = request.get_json()
         name, rating = data.get("name"), data.get("rating")
 
         try:
-            new_seller = self.seller_service.register(name, rating)
+            new_seller = SellerService.register(name, rating)
             return jsonify({"seller": new_seller})
         except (NotFoundError, AlreadyExistsError, InvalidInputError) as e:
             return jsonify({"error": e.message}), e.status_code
@@ -28,7 +26,7 @@ class SellerController:
         new_name = request.get_json().get("new_name")
 
         try:
-            updated_seller = self.seller_service.update_name(seller_id, new_name)
+            updated_seller = SellerService.update_name(seller_id, new_name)
             return jsonify({"updated_seller": updated_seller}), 201
         except (NotFoundError, AlreadyExistsError, InvalidInputError) as e:
             return jsonify({"error": e.message}), e.status_code

@@ -4,16 +4,16 @@ from app.exceptions import (
     InvalidInputError
 )
 
+from app.db import get_db
 
 class SellerService:
-    def __init__(self, db):
-        self.db = db
-
-    def register(self, name, rating):
+    @staticmethod
+    def register(name, rating):
         if not name or not rating:
             raise InvalidInputError("name", "rating")
 
-        cursor = self.db.cursor()
+        db = get_db()
+        cursor = db.cursor()
 
         cursor.execute("SELECT * FROM sellers WHERE name = ?", (name, ))
         candidate = cursor.fetchone()
@@ -29,16 +29,19 @@ class SellerService:
         cursor.execute("SELECT * FROM sellers WHERE name = ?", (name, ))
         seller = cursor.fetchone()
 
-        self.db.commit()
+        db.commit()
+        db.close()
 
         return dict(seller)
 
-    def update_name(self, seller_id, new_name):
+    @staticmethod
+    def update_name(seller_id, new_name):
 
         if not seller_id or not new_name:
             raise InvalidInputError("seller_id", "new_name")
 
-        cursor = self.db.cursor()
+        db = get_db()
+        cursor = db.cursor()
 
         cursor.execute("SELECT * FROM sellers WHERE id = ?", (seller_id, ))
         candidate = cursor.fetchone()
@@ -54,12 +57,7 @@ class SellerService:
         cursor.execute("SELECT * FROM sellers WHERE id = ?", (seller_id, ))
         updated_seller = cursor.fetchone()
 
-        self.db.commit()
+        db.commit()
+        db.close()
 
         return dict(updated_seller)
-
-
-
-
-
-

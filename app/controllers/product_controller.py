@@ -6,7 +6,6 @@ from app.exceptions import (
     AlreadyExistsError,
     InvalidInputError
 )
-
 class ProductController:
     def __init__(self):
         self.db = get_db()
