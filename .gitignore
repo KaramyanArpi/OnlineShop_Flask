@@ -1,2 +1,5 @@
 .idea/
 .venv/
+.gitignore
+database.db
+__pycache__/
